@@ -2,8 +2,11 @@ const http = require("https");
 const fs = require("fs");
 const zlib = require("zlib");
 const express = require("express");
-const app = express();
 const moment = require("moment");
+const cors = require("cors");
+
+const app = express();
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("hello");
