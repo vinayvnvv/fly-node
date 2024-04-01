@@ -3,6 +3,7 @@ const fs = require("fs");
 const zlib = require("zlib");
 const express = require("express");
 const app = express();
+const moment = require("moment");
 
 app.get("/", (req, res) => {
   res.send("hello");
@@ -40,8 +41,30 @@ app.get("/symbols", (req, responseRef) => {
             console.error("Error reading output file:", err);
           } else {
             console.log("Content of the unzipped file:");
-            console.log(data);
-            responseRef.json(data);
+            console.log(typeof data);
+            const jsonData = JSON.parse(data);
+            console.log(jsonData.length);
+            const today = moment();
+            // Get the date 10 days from today
+            const next10Days = moment().add(8, "days");
+
+            // Create a sample date to check
+            // E
+            let result = jsonData.filter((d) => {
+              const sampleDate = moment(d.expiry);
+              const expMatch = sampleDate.isBetween(
+                today,
+                next10Days,
+                null,
+                "[]"
+              );
+              const symbolMatch = /BANKNIFTY|NIFTY|FINNIFTY/.test(
+                d.trading_symbol
+              );
+              return expMatch && symbolMatch;
+            });
+            console.log(result.length);
+            responseRef.json(result);
           }
         });
       })
