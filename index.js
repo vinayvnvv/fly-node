@@ -61,9 +61,19 @@ app.get("/symbols", (req, responseRef) => {
                 null,
                 "[]"
               );
-              const symbolMatch = /BANKNIFTY|NIFTY|FINNIFTY/.test(
-                d.trading_symbol
-              );
+              const validNames = new Set([
+                "BANKNIFTY",
+                "NIFTY",
+                "FINNIFTY",
+                "Nifty 50",
+                "Nifty Bank",
+                "Nifty Fin Service",
+              ]);
+              //   const symbolMatch =
+              //     /BANKNIFTY|NIFTY|FINNIFTY|Nifty 50|Nifty Bank|Nifty Fin Service/.test(
+              //       d.name
+              //     );
+              const symbolMatch = validNames.has(d.name);
               return expMatch && symbolMatch;
             });
             console.log(result.length);
