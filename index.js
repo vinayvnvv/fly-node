@@ -41,7 +41,7 @@ app.get("/symbols", (req, responseRef) => {
           } else {
             console.log("Content of the unzipped file:");
             console.log(data);
-            responseRef.send(data);
+            responseRef.json(data);
           }
         });
       })
