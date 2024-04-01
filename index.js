@@ -4,6 +4,10 @@ const zlib = require("zlib");
 const express = require("express");
 const app = express();
 
+app.get("/", (req, res) => {
+  res.send("hello");
+});
+
 app.get("/symbols", (req, res) => {
   res.send("hello world");
 });
@@ -52,3 +56,7 @@ app.get("/symbols", (req, res) => {
 // request.on("error", (err) => {
 //   console.error("Error downloading the file:", err);
 // });
+
+app.listen(process.env.PORT || 4000, () => {
+  console.log("app started", process.env.PORT || 4000);
+});
