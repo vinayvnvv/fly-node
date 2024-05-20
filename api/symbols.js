@@ -10,7 +10,7 @@ const fetchSymbols = (
   responseRef
 ) => {
   // URL of the gz file
-  const outputFile = "output.txt"; // Name of the output file
+  const outputFile = "/tmp/output.txt"; // Name of the output file
 
   // Create a writable stream for the output file
   const outputStream = fs.createWriteStream(outputFile);
