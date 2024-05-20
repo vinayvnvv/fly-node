@@ -5,7 +5,7 @@ const fastify = Fastify({
 });
 
 // Declare a route
-fastify.get("/symbols", async function handler(request, reply) {
+fastify.get("/", async function handler(request, reply) {
   const res = await getSymbolsData();
   return res;
 });
