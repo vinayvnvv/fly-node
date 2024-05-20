@@ -1,7 +1,11 @@
 const Fastify = require("fastify");
+const cors = require("@fastify/cors");
 const getSymbolsData = require("./symbols");
 const fastify = Fastify({
   logger: true,
+});
+fastify.register(cors, {
+  // put your options here
 });
 
 // Declare a route
