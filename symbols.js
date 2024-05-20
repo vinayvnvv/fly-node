@@ -104,4 +104,12 @@ const getSymbols = (req, responseRef) => {
   fetchSymbols(fileUrl, false, [], filterNamesSet, responseRef);
 };
 
-module.exports = getSymbols;
+const getSymbolsData = () => {
+  return new Promise((resolve, reject) => {
+    getSymbols({}, (data) => {
+      resolve(data);
+    });
+  });
+};
+
+module.exports = getSymbolsData;
