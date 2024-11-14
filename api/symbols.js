@@ -45,6 +45,7 @@ const fetchSymbols = (
             const today = moment();
             // Get the date 10 days from today
             const next10Days = moment().add(8, "days");
+            const next28days = moment().add(28, "days");
 
             // Create a sample date to check
             // E
@@ -52,7 +53,9 @@ const fetchSymbols = (
               const sampleDate = moment(d.expiry);
               const expMatch = sampleDate.isBetween(
                 today,
-                next10Days,
+                d.asset_key === "NSE_INDEX|Nifty Bank"
+                  ? next28days
+                  : next10Days,
                 null,
                 "[]"
               );
