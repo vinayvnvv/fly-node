@@ -53,7 +53,8 @@ const fetchSymbols = (
               const sampleDate = moment(d.expiry);
               const expMatch = sampleDate.isBetween(
                 today,
-                d.asset_key === "NSE_INDEX|Nifty Bank"
+                d.asset_key === "NSE_INDEX|Nifty Bank" ||
+                  d.asset_key === "NSE_INDEX:Nifty Fin Service"
                   ? next28days
                   : next10Days,
                 null,
