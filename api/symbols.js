@@ -45,17 +45,19 @@ const fetchSymbols = (
             const today = moment();
             // Get the date 10 days from today
             const next10Days = moment().add(8, "days");
-            const next28days = moment().add(28, "days");
+            const next30days = moment().add(37, "days");
 
             // Create a sample date to check
             // E
             let result = jsonData.filter((d) => {
               const sampleDate = moment(d.expiry);
+              if (d.asset_key === "NSE_INDEX|Nifty Fin Service")
+                console.log(d, sampleDate.format("DD-MM-YYYY"));
               const expMatch = sampleDate.isBetween(
                 today,
                 d.asset_key === "NSE_INDEX|Nifty Bank" ||
                   d.asset_key === "NSE_INDEX|Nifty Fin Service"
-                  ? next28days
+                  ? next30days
                   : next10Days,
                 null,
                 "[]"
