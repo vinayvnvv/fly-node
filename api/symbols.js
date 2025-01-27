@@ -2,6 +2,7 @@ const http = require("https");
 const fs = require("fs");
 const zlib = require("zlib");
 const moment = require("moment");
+const { Readable } = require("stream");
 const fetchSymbols = (
   fileUrl,
   finish,
@@ -16,15 +17,17 @@ const fetchSymbols = (
   const outputStream = fs.createWriteStream(outputFile);
 
   // Make a GET request to download the gz file
-  const request = http.get(fileUrl, (response) => {
+  const request = fetch(fileUrl).then((_response) => {
     // Check if response is successful
-    if (response.statusCode !== 200) {
+    if (_response.status !== 200) {
       console.error(
         "Failed to download the file. Status code:",
-        response.statusCode
+        _response.statusCode
       );
       return;
     }
+
+    const response = Readable.fromWeb(_response.body);
 
     // Pipe the response to zlib to unzip
     const gunzip = zlib.createGunzip();
@@ -77,8 +80,8 @@ const fetchSymbols = (
               return;
             } else {
               fetchSymbols(
-                // "https://assets.upstox.com/market-quote/instruments/exchange/BSE.json.gz",
-                "https://fly-node.vercel.app/static/BSE.json.gz",
+                "https://assets.upstox.com/market-quote/instruments/exchange/BSE.json.gz",
+                // "https://fly-node.vercel.app/static/BSE.json.gz",
                 true,
                 result,
                 ["SENSEX"],
@@ -92,15 +95,15 @@ const fetchSymbols = (
         console.error("Error writing to output file:", err);
       });
   });
-  request.on("error", (err) => {
+  request.catch("error", (err) => {
     responseRef([...symbolsData]);
   });
 };
 
 const getSymbols = (req, responseRef) => {
   const fileUrl =
-    // "https://assets.upstox.com/market-quote/instruments/exchange/NSE.json.gz";
-    "https://fly-node.vercel.app/static/NSE.json.gz";
+    "https://assets.upstox.com/market-quote/instruments/exchange/NSE.json.gz";
+  // "https://fly-node.vercel.app/static/NSE.json.gz";
   const filterNamesSet = [
     "BANKNIFTY",
     "NIFTY",
