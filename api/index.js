@@ -1,11 +1,19 @@
 const Fastify = require("fastify");
 const cors = require("@fastify/cors");
+const fastifyStatic = require("@fastify/static");
+const path = require("path");
 const getSymbolsData = require("./symbols");
 const fastify = Fastify({
   logger: true,
 });
 fastify.register(cors, {
   // put your options here
+});
+
+fastify.register(fastifyStatic, {
+  root: path.join(__dirname, "./../static"),
+  prefix: "/static/", // optional: default '/'
+  //constraints: { host: "example.com" }, // optional: default {}
 });
 
 // Declare a route

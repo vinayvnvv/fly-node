@@ -77,7 +77,8 @@ const fetchSymbols = (
               return;
             } else {
               fetchSymbols(
-                "https://assets.upstox.com/market-quote/instruments/exchange/BSE.json.gz",
+                // "https://assets.upstox.com/market-quote/instruments/exchange/BSE.json.gz",
+                "https://fly-node.vercel.app/static/BSE.json.gz",
                 true,
                 result,
                 ["SENSEX"],
@@ -98,7 +99,8 @@ const fetchSymbols = (
 
 const getSymbols = (req, responseRef) => {
   const fileUrl =
-    "https://assets.upstox.com/market-quote/instruments/exchange/NSE.json.gz";
+    // "https://assets.upstox.com/market-quote/instruments/exchange/NSE.json.gz";
+    "https://fly-node.vercel.app/static/NSE.json.gz";
   const filterNamesSet = [
     "BANKNIFTY",
     "NIFTY",
