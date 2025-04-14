@@ -66,13 +66,15 @@ const fetchSymbols = (
                 "[]"
               );
               const validNames = new Set(filterNamesSet);
+              const niftyFutMatch =
+                d.name === "NIFTY" && d.instrument_type === "FUT";
               //   const symbolMatch =
               //     /BANKNIFTY|NIFTY|FINNIFTY|Nifty 50|Nifty Bank|Nifty Fin Service/.test(
               //       d.name
               //     );
               const symbolMatch = validNames.has(d.name);
               const assetSymbol = finish ? d.asset_type === "INDEX" : true;
-              return expMatch && symbolMatch && assetSymbol;
+              return (niftyFutMatch || expMatch) && symbolMatch && assetSymbol;
             });
             if (finish) {
               responseRef([...result, ...symbolsData]);
