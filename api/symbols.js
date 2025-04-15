@@ -3,6 +3,7 @@ const fs = require("fs");
 const zlib = require("zlib");
 const moment = require("moment");
 const { Readable } = require("stream");
+const { getFyersSymbol } = require("./utils");
 const fetchSymbols = (
   fileUrl,
   finish,
@@ -54,6 +55,7 @@ const fetchSymbols = (
             // E
             let result = jsonData.filter((d) => {
               const sampleDate = moment(d.expiry);
+              d.fyers_symbol = getFyersSymbol(d);
               if (d.asset_key === "NSE_INDEX|Nifty Fin Service")
                 console.log(d, sampleDate.format("DD-MM-YYYY"));
               const expMatch = sampleDate.isBetween(
