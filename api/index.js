@@ -27,6 +27,19 @@ fastify.get("/all", async function handler(request, reply) {
   return res;
 });
 
+fastify.get("/instruments/:exchange", async function handler(request, reply) {
+  const axios = require("axios");
+  const exchange = request.params.exchange;
+  const fileUrl = `https://assets.upstox.com/market-quote/instruments/exchange/${exchange}.json.gz`;
+
+  try {
+    const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
+    reply.type("application/gzip").send(response.data);
+  } catch (error) {
+    reply.status(500).send({ error: "Failed to download file" });
+  }
+});
+
 // Run the server!
 async function runServer() {
   try {
