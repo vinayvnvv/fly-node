@@ -9,7 +9,8 @@ const fetchSymbols = (
   finish,
   symbolsData,
   filterNamesSet,
-  responseRef
+  responseRef,
+  all = false
 ) => {
   // URL of the gz file
   const outputFile = "/tmp/output.txt"; // Name of the output file
@@ -53,31 +54,35 @@ const fetchSymbols = (
 
             // Create a sample date to check
             // E
-            let result = jsonData.filter((d) => {
-              const sampleDate = moment(d.expiry);
-              d.fyers_symbol = getFyersSymbol(d);
-              if (d.asset_key === "NSE_INDEX|Nifty Fin Service")
-                console.log(d, sampleDate.format("DD-MM-YYYY"));
-              const expMatch = sampleDate.isBetween(
-                today,
-                d.asset_key === "NSE_INDEX|Nifty Bank" ||
-                  d.asset_key === "NSE_INDEX|Nifty Fin Service"
-                  ? next30days
-                  : next10Days,
-                null,
-                "[]"
-              );
-              const validNames = new Set(filterNamesSet);
-              const niftyFutMatch =
-                d.name === "NIFTY" && d.instrument_type === "FUT";
-              //   const symbolMatch =
-              //     /BANKNIFTY|NIFTY|FINNIFTY|Nifty 50|Nifty Bank|Nifty Fin Service/.test(
-              //       d.name
-              //     );
-              const symbolMatch = validNames.has(d.name);
-              const assetSymbol = finish ? d.asset_type === "INDEX" : true;
-              return (niftyFutMatch || expMatch) && symbolMatch && assetSymbol;
-            });
+            let result = all
+              ? jsonData
+              : jsonData.filter((d) => {
+                  const sampleDate = moment(d.expiry);
+                  d.fyers_symbol = getFyersSymbol(d);
+                  if (d.asset_key === "NSE_INDEX|Nifty Fin Service")
+                    console.log(d, sampleDate.format("DD-MM-YYYY"));
+                  const expMatch = sampleDate.isBetween(
+                    today,
+                    d.asset_key === "NSE_INDEX|Nifty Bank" ||
+                      d.asset_key === "NSE_INDEX|Nifty Fin Service"
+                      ? next30days
+                      : next10Days,
+                    null,
+                    "[]"
+                  );
+                  const validNames = new Set(filterNamesSet);
+                  const niftyFutMatch =
+                    d.name === "NIFTY" && d.instrument_type === "FUT";
+                  //   const symbolMatch =
+                  //     /BANKNIFTY|NIFTY|FINNIFTY|Nifty 50|Nifty Bank|Nifty Fin Service/.test(
+                  //       d.name
+                  //     );
+                  const symbolMatch = validNames.has(d.name);
+                  const assetSymbol = finish ? d.asset_type === "INDEX" : true;
+                  return (
+                    (niftyFutMatch || expMatch) && symbolMatch && assetSymbol
+                  );
+                });
             if (finish) {
               responseRef([...result, ...symbolsData]);
               // responseRef.json(result);
@@ -89,7 +94,8 @@ const fetchSymbols = (
                 true,
                 result,
                 ["SENSEX"],
-                responseRef
+                responseRef,
+                all
               );
             }
           }
@@ -104,7 +110,7 @@ const fetchSymbols = (
   });
 };
 
-const getSymbols = (req, responseRef) => {
+const getSymbols = (req, responseRef, all = false) => {
   const fileUrl =
     "https://assets.upstox.com/market-quote/instruments/exchange/NSE.json.gz";
   // "https://fly-node.vercel.app/static/NSE.json.gz";
@@ -116,14 +122,18 @@ const getSymbols = (req, responseRef) => {
     "Nifty Bank",
     "Nifty Fin Service",
   ];
-  fetchSymbols(fileUrl, false, [], filterNamesSet, responseRef);
+  fetchSymbols(fileUrl, false, [], filterNamesSet, responseRef, all);
 };
 
-const getSymbolsData = () => {
+const getSymbolsData = (all = false) => {
   return new Promise((resolve, reject) => {
-    getSymbols({}, (data) => {
-      resolve(data);
-    });
+    getSymbols(
+      {},
+      (data) => {
+        resolve(data);
+      },
+      all
+    );
   });
 };
 

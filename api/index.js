@@ -22,6 +22,11 @@ fastify.get("/", async function handler(request, reply) {
   return res;
 });
 
+fastify.get("/all", async function handler(request, reply) {
+  const res = await getSymbolsData(true);
+  return res;
+});
+
 // Run the server!
 async function runServer() {
   try {
