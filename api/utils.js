@@ -10,11 +10,19 @@ const getFyersSymbol = (symbol) => {
     symbol.instrument_type === "CE" ||
     symbol.instrument_type === "PE"
   ) {
-    sym = `${symbol.exchange}:${symbol.underlying_symbol}${moment(
-      symbol.expiry
-    ).format("YY")}${moment(symbol.expiry).format("MMM").toUpperCase()}${
-      symbol.strike_price
-    }${symbol.instrument_type}`;
+    if (symbol.weekly) {
+      sym = `${symbol.exchange}:${symbol.underlying_symbol}${moment(
+        symbol.expiry
+      ).format("YY")}${moment(symbol.expiry).format("M")}${moment(
+        symbol.expiry
+      ).format("DD")}${symbol.strike_price}${symbol.instrument_type}`;
+    } else {
+      sym = `${symbol.exchange}:${symbol.underlying_symbol}${moment(
+        symbol.expiry
+      ).format("YY")}${moment(symbol.expiry).format("MMM").toUpperCase()}${
+        symbol.strike_price
+      }${symbol.instrument_type}`;
+    }
   }
   return sym;
 };
