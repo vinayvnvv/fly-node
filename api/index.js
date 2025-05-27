@@ -27,16 +27,18 @@ fastify.get("/all", async function handler(request, reply) {
   return res;
 });
 
+function main() {
+  let i = 0;
+  setInterval(() => {
+    i++;
+    console.log(i);
+    if (i === 50) r();
+  }, 1000);
+}
+
 fastify.get("/test", async function handler(request, reply) {
-  const res = await new Promise((r) => {
-    let i = 0;
-    setInterval(() => {
-      i++;
-      console.log(i);
-      if (i === 50) r();
-    }, 1000);
-  });
-  return res;
+  main();
+  return "success";
 });
 
 fastify.get("/instruments/:exchange", async function handler(request, reply) {
