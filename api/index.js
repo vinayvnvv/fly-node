@@ -27,6 +27,18 @@ fastify.get("/all", async function handler(request, reply) {
   return res;
 });
 
+fastify.get("/test", async function handler(request, reply) {
+  const res = await new Promise((r) => {
+    let i = 0;
+    setInterval(() => {
+      i++;
+      console.log(i);
+      if (i === 50) r();
+    }, 1000);
+  });
+  return res;
+});
+
 fastify.get("/instruments/:exchange", async function handler(request, reply) {
   const axios = require("axios");
   const exchange = request.params.exchange;
