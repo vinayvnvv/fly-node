@@ -3,6 +3,7 @@ const cors = require("@fastify/cors");
 const fastifyStatic = require("@fastify/static");
 const path = require("path");
 const getSymbolsData = require("./symbols");
+const { getMarketDataByDate } = require("../config/firebase");
 const fastify = Fastify({
   logger: true,
 });
@@ -39,6 +40,13 @@ function main() {
 fastify.get("/test", async function handler(request, reply) {
   main();
   return "success";
+});
+
+fastify.get("/pre-market/:id", async function handler(request, reply) {
+  const id = request.params.id;
+  const res = await getMarketDataByDate(id);
+  if (res) reply.send(res);
+  else reply.status(404).send({ message: "No Document found" });
 });
 
 fastify.get("/instruments/:exchange", async function handler(request, reply) {
