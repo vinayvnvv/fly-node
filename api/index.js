@@ -3,7 +3,11 @@ const cors = require("@fastify/cors");
 const fastifyStatic = require("@fastify/static");
 const path = require("path");
 const getSymbolsData = require("./symbols");
-const { getMarketDataByDate } = require("../config/firebase");
+const {
+  getMarketDataByDate,
+  getUpstoxT,
+  saveUpstoxT,
+} = require("../config/firebase");
 const fastify = Fastify({
   logger: true,
 });
@@ -45,6 +49,19 @@ fastify.get("/test", async function handler(request, reply) {
 fastify.get("/pre-market/:id", async function handler(request, reply) {
   const id = request.params.id;
   const res = await getMarketDataByDate(id);
+  if (res) reply.send(res);
+  else reply.status(404).send({ message: "No Document found" });
+});
+
+fastify.get("/upstoxT", async function handler(request, reply) {
+  const res = await getUpstoxT();
+  if (res) reply.send(res);
+  else reply.status(404).send({ message: "No Document found" });
+});
+
+fastify.post("/upstoxT", async function handler(request, reply) {
+  const payload = request.body;
+  const res = await saveUpstoxT(payload);
   if (res) reply.send(res);
   else reply.status(404).send({ message: "No Document found" });
 });
