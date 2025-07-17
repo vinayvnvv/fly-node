@@ -8,6 +8,7 @@ const {
   getUpstoxT,
   saveUpstoxT,
 } = require("../config/firebase");
+const { getCandles } = require("./candles");
 const fastify = Fastify({
   logger: true,
 });
@@ -52,6 +53,16 @@ fastify.get("/pre-market/:id", async function handler(request, reply) {
   if (res) reply.send(res);
   else reply.status(404).send({ message: "No Document found" });
 });
+
+fastify.get(
+  "/candles/:instrumentKey/:interval/:from/:limit",
+  async function handler(request, reply) {
+    const { instrumentKey, interval, from, limit } = request.params;
+    const res = await getCandles(instrumentKey, interval, from, limit);
+    if (res) reply.send(res);
+    else reply.status(404).send({ message: "No Document found" });
+  }
+);
 
 fastify.get("/upstoxT", async function handler(request, reply) {
   const res = await getUpstoxT();
