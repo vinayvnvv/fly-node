@@ -28,6 +28,20 @@ fastify.get("/", async function handler(request, reply) {
   return res;
 });
 
+fastify.get("/eq-index", async function handler(request, reply) {
+  const res = await getSymbolsData(true);
+  if (res && res.length > 0) {
+    return res.filter(
+      (item) =>
+        item.segment === "NSE_EQ" ||
+        item.segment === "NSE_INDEX" ||
+        item.segment === "BSE_INDEX"
+    );
+  } else {
+    return [];
+  }
+});
+
 fastify.get("/all", async function handler(request, reply) {
   const res = await getSymbolsData(true);
   return res;
