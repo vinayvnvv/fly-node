@@ -1,0 +1,109 @@
+const http = require("https");
+const fs = require("fs");
+const zlib = require("zlib");
+const moment = require("moment");
+const { Readable } = require("stream");
+const { getFyersSymbol } = require("./utils");
+const fetchSymbols = (
+  fileUrl,
+  finish,
+  symbolsData,
+  filterNamesSet,
+  responseRef,
+  all = false
+) => {
+  // URL of the gz file
+  const outputFile = "/tmp/output.txt"; // Name of the output file
+
+  // Create a writable stream for the output file
+  const outputStream = fs.createWriteStream(outputFile);
+
+  // Make a GET request to download the gz file
+  const request = fetch(fileUrl).then((_response) => {
+    // Check if response is successful
+    if (_response.status !== 200) {
+      console.error(
+        "Failed to download the file. Status code:",
+        _response.statusCode
+      );
+      return;
+    }
+
+    const response = Readable.fromWeb(_response.body);
+
+    // Pipe the response to zlib to unzip
+    const gunzip = zlib.createGunzip();
+    response
+      .pipe(gunzip)
+      .pipe(outputStream)
+      .on("finish", () => {
+        console.log("File unzipped successfully.");
+        // Once unzipping is done, read the output file and print its content
+        fs.readFile(outputFile, "utf8", (err, data) => {
+          if (err) {
+            console.error("Error reading output file:", err);
+          } else {
+            // console.log("Content of the unzipped file:");
+            console.log(typeof data);
+            const jsonData = JSON.parse(data);
+            console.log(jsonData.length);
+            const today = moment();
+            // Get the date 10 days from today
+            const next10Days = moment().add(8, "days");
+            const next40days = moment().add(40, "days");
+
+            // Create a sample date to check
+            // E
+            let result = all
+              ? jsonData
+              : jsonData.filter((d) => {
+                  const sampleDate = moment(d.expiry);
+                  if (d.asset_key === "NSE_INDEX|Nifty Fin Service")
+                    console.log(d, sampleDate.format("DD-MM-YYYY"));
+                  const expMatch = sampleDate.isBetween(
+                    today,
+                    next40days,
+                    null,
+                    "[]"
+                  );
+
+                  return expMatch;
+                });
+            if (finish) {
+              responseRef([...result, ...symbolsData]);
+              // responseRef.json(result);
+              return;
+            }
+          }
+        });
+      })
+      .on("error", (err) => {
+        console.error("Error writing to output file:", err);
+      });
+  });
+  request.catch("error", (err) => {
+    responseRef([...symbolsData]);
+  });
+};
+
+const getSymbols = (req, responseRef, all = false) => {
+  const fileUrl =
+    "https://assets.upstox.com/market-quote/instruments/exchange/MCX.json.gz";
+  // "https://fly-node.vercel.app/static/NSE.json.gz";
+  const filterNamesSet = ["MCX_FO"];
+  fetchSymbols(fileUrl, true, [], filterNamesSet, responseRef, all);
+};
+
+const getSymbolsData = (all = false) => {
+  return new Promise((resolve, reject) => {
+    getSymbols(
+      {},
+      (data) => {
+        resolve(data);
+      },
+      false
+    );
+  });
+};
+
+module.exports = getSymbolsData;

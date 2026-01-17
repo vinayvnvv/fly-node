@@ -3,6 +3,7 @@ const cors = require("@fastify/cors");
 const fastifyStatic = require("@fastify/static");
 const path = require("path");
 const getSymbolsData = require("./symbols");
+const getMcxSymbolsData = require("./mcxSymbols");
 const {
   getMarketDataByDate,
   getUpstoxT,
@@ -40,6 +41,11 @@ fastify.get("/eq-index", async function handler(request, reply) {
   } else {
     return [];
   }
+});
+
+fastify.get("/mcx", async function handler(request, reply) {
+  const res = await getMcxSymbolsData();
+  return res;
 });
 
 fastify.get("/all", async function handler(request, reply) {
